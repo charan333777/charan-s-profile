@@ -11,7 +11,7 @@ export const PERSON = {
   lookingFor: 'Open to DevOps · Platform · SRE roles — UK or remote',
 };
 
-export const CV_HREF = '/cv.pdf';
+export const CV_HREF = '/Saicharan_Duduka-CV.pdf';
 
 export const CONTACT = {
   email: 'charan777492@gmail.com',
