@@ -7,8 +7,9 @@ import heroPhoto from '@/public/photos/hero-horizon.jpg';
 import contactPhoto from '@/public/photos/open-view.jpg';
 import hillsideHomes from '@/public/photos/hillside-homes.jpg';
 import greenRidge from '@/public/photos/green-ridge.jpg';
+import portraitPhoto from '@/public/photos/charan-portrait.jpg';
 
-export { heroPhoto, contactPhoto, hillsideHomes, greenRidge };
+export { heroPhoto, contactPhoto, hillsideHomes, greenRidge, portraitPhoto };
 
 export type GalleryPhoto = {
   src: StaticImageData;

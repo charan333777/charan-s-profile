@@ -8,6 +8,7 @@ export const PERSON = {
   role: 'DevOps & Cloud Engineer',
   tagline: 'I build reliable cloud platforms and ship SaaS products end-to-end',
   location: 'UK · always exploring',
+  lookingFor: 'Open to DevOps · Platform · SRE roles — UK or remote',
 };
 
 export const CV_HREF = '/cv.pdf';
@@ -27,7 +28,6 @@ export const CONTACT = {
 export const NAV_LINKS = [
   { href: '#path', label: 'Path' },
   { href: '#grown', label: 'Products' },
-  { href: '#lens', label: 'Gallery' },
   { href: '#contact', label: 'Contact' },
 ];
 
@@ -66,21 +66,25 @@ export const TECH_CHIPS = [
   'OpenAI API',
 ];
 
+/** `icon` keys map to components in components/UnderTheOak via PROOF_ICONS. */
 export const PROOF_POINTS = [
   {
     value: '5+',
     label: 'years combined experience',
     detail: 'cloud, CI/CD, automation and SaaS delivery',
+    icon: 'compass' as const,
   },
   {
     value: '2',
     label: 'live SaaS products',
     detail: 'designed, shipped and operated solo',
+    icon: 'rocket' as const,
   },
   {
     value: '3',
     label: 'cloud platforms',
     detail: 'hands-on across Azure, AWS and GCP',
+    icon: 'layers' as const,
   },
 ];
 

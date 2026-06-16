@@ -89,6 +89,51 @@ export function Close(props: IconProps) {
   );
 }
 
+export function Compass(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="m15.5 8.5-2 5-5 2 2-5z" />
+    </svg>
+  );
+}
+
+export function Rocket(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 15c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2 0-2.8a2 2 0 0 0-3 .8z" />
+      <path d="M9 12a14 14 0 0 1 8-9c2 0 4 2 4 4a14 14 0 0 1-9 8z" />
+      <circle cx="14.5" cy="9.5" r="1.5" />
+    </svg>
+  );
+}
+
+export function Layers(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="m12 3 9 5-9 5-9-5 9-5z" />
+      <path d="m3 13 9 5 9-5" />
+    </svg>
+  );
+}
+
+export function Copy(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="9" y="9" width="11" height="11" rx="2" />
+      <path d="M5 15V5a2 2 0 0 1 2-2h8" />
+    </svg>
+  );
+}
+
+export function Check(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="m5 12 5 5 9-10" />
+    </svg>
+  );
+}
+
 export function Leaf(props: IconProps) {
   return (
     <svg {...base} {...props}>

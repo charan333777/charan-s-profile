@@ -1,11 +1,12 @@
 'use client';
 
 import Image from 'next/image';
+import { useState } from 'react';
 import { contactPhoto } from '@/lib/images';
 import { CONTACT, CV_HREF, WORKING_STYLE } from '@/lib/data';
 import { Reveal } from './motion';
 import GlassButton from './GlassButton';
-import { Mail, LinkedIn, GitHub, Download, ArrowUpRight } from './icons';
+import { Mail, LinkedIn, GitHub, Download, ArrowUpRight, Copy, Check } from './icons';
 import type { ReactNode } from 'react';
 
 type Method = {
@@ -41,6 +42,18 @@ const METHODS: Method[] = [
 ];
 
 export default function TheOpenView() {
+  const [copied, setCopied] = useState(false);
+
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(CONTACT.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* clipboard unavailable — the mailto link still works */
+    }
+  };
+
   return (
     <section
       id="contact"
@@ -68,7 +81,7 @@ export default function TheOpenView() {
         <Reveal>
           <span className="inline-flex items-center gap-3 font-mono text-xs uppercase tracking-[0.3em] text-mint">
             <span className="h-px w-8 bg-gradient-to-r from-mint to-transparent" aria-hidden="true" />
-            05 · The open view
+            04 · The open view
           </span>
         </Reveal>
 
@@ -104,36 +117,60 @@ export default function TheOpenView() {
             </div>
 
             <ul className="mt-7 space-y-3">
-              {METHODS.map((m) => (
-                <li key={m.name}>
-                  <a
-                    href={m.href}
-                    target={m.external ? '_blank' : undefined}
-                    rel={m.external ? 'noopener noreferrer' : undefined}
-                    className="group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white/90 transition-colors duration-300 hover:border-leaf/30 hover:bg-white/10"
-                  >
-                    <span
-                      className="absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 bg-gradient-to-b from-leaf to-amber transition-transform duration-300 ease-grow group-hover:scale-y-100"
-                      aria-hidden="true"
-                    />
-                    <span className="text-mint transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(29,158,117,0.85)]">
-                      {m.icon}
-                    </span>
-                    <span className="flex flex-col">
-                      <span className="font-mono text-[0.7rem] uppercase tracking-widest text-white/70">
-                        {m.name}
+              {METHODS.map((m) => {
+                const isEmail = m.name === 'Email';
+                return (
+                  <li key={m.name} className="relative">
+                    <a
+                      href={m.href}
+                      target={m.external ? '_blank' : undefined}
+                      rel={m.external ? 'noopener noreferrer' : undefined}
+                      className={`group relative flex items-center gap-3 overflow-hidden rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-white/90 transition-colors duration-300 hover:border-leaf/30 hover:bg-white/10 ${
+                        isEmail ? 'pr-14' : ''
+                      }`}
+                    >
+                      <span
+                        className="absolute left-0 top-0 h-full w-[3px] origin-top scale-y-0 bg-gradient-to-b from-leaf to-amber transition-transform duration-300 ease-grow group-hover:scale-y-100"
+                        aria-hidden="true"
+                      />
+                      <span className="text-mint transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(29,158,117,0.85)]">
+                        {m.icon}
                       </span>
-                      <span className="text-sm">{m.label}</span>
-                    </span>
-                    <ArrowUpRight
-                      width={16}
-                      height={16}
-                      className="ml-auto text-white/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white/80"
-                    />
-                  </a>
-                </li>
-              ))}
+                      <span className="flex min-w-0 flex-col">
+                        <span className="font-mono text-[0.7rem] uppercase tracking-widest text-white/70">
+                          {m.name}
+                        </span>
+                        <span className="truncate text-sm">{m.label}</span>
+                      </span>
+                      {!isEmail && (
+                        <ArrowUpRight
+                          width={16}
+                          height={16}
+                          className="ml-auto text-white/40 transition-all duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-white/80"
+                        />
+                      )}
+                    </a>
+                    {isEmail && (
+                      <button
+                        type="button"
+                        onClick={copyEmail}
+                        aria-label={copied ? 'Email address copied' : 'Copy email address'}
+                        className="absolute right-2.5 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-xl border border-white/15 bg-white/5 text-white/70 transition-all duration-300 hover:border-leaf/40 hover:bg-white/10 hover:text-mint"
+                      >
+                        {copied ? (
+                          <Check width={16} height={16} className="text-mint" />
+                        ) : (
+                          <Copy width={16} height={16} />
+                        )}
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
+            <span aria-live="polite" className="sr-only">
+              {copied ? 'Email address copied to clipboard' : ''}
+            </span>
 
             <div className="mt-7">
               <GlassButton

@@ -113,7 +113,12 @@ export default function Hero() {
             <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-leaf text-leaf" aria-hidden="true" />
             {PERSON.location}
             <span className="text-white/40">·</span>
-            <span className="text-mint">Open to work</span>
+            <a
+              href="#contact"
+              className="rounded-full text-mint underline-offset-4 transition-colors hover:text-mint/80 hover:underline focus-visible:underline"
+            >
+              Open to work
+            </a>
           </span>
 
           <h1
@@ -128,6 +133,11 @@ export default function Hero() {
           <p className="mt-5 max-w-md font-display text-lg text-white/90 sm:text-xl">
             {PERSON.role} <span className="text-white/70">·</span>{' '}
             <span className="text-mint">{PERSON.tagline}</span>
+          </p>
+
+          <p className="mt-4 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-white/65">
+            <span className="h-px w-6 bg-gradient-to-r from-amber to-transparent" aria-hidden="true" />
+            {PERSON.lookingFor}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Space_Grotesk, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import ScrollProgress from '@/components/ScrollProgress';
+import PathRail from '@/components/PathRail';
 import CursorGlow from '@/components/CursorGlow';
 import ContourField from '@/components/ContourField';
 import SoundToggle from '@/components/SoundToggle';
@@ -95,6 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         <ScrollProgress />
+        <PathRail />
         <CursorGlow />
         <SoundToggle />
         {children}

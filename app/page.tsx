@@ -3,7 +3,6 @@ import Hero from '@/components/Hero';
 import UnderTheOak from '@/components/UnderTheOak';
 import ThePath from '@/components/ThePath';
 import GrownHere from '@/components/GrownHere';
-import ThroughMyLens from '@/components/ThroughMyLens';
 import TheOpenView from '@/components/TheOpenView';
 import Footer from '@/components/Footer';
 import HillDivider from '@/components/HillDivider';
@@ -29,7 +28,6 @@ export default function Page() {
         <ThePath />
         <HillDivider flip />
         <GrownHere />
-        <ThroughMyLens />
         <TheOpenView />
       </main>
 
