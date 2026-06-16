@@ -1,0 +1,609 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   BASE
+   ============================================================ */
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchored sections for the sticky glass mini-nav. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    @apply bg-deep-green text-white/90 font-sans antialiased;
+    /* A continuous twilight-on-the-road gradient sits under every section:
+       deep teal at the top, easing through slate-blue into a warm dusk horizon
+       — golden hour as you scroll down. */
+    background-image: linear-gradient(
+      180deg,
+      #0e2730 0%,
+      #102a38 24%,
+      #14324a 48%,
+      #1b3a52 66%,
+      #2c354f 84%,
+      #3c3142 100%
+    );
+    background-attachment: scroll;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: rgba(239, 159, 39, 0.35);
+    color: #fff;
+  }
+
+  /* Visible focus rings on glass — white 60%. */
+  :focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.6);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  /* Thin, on-brand scrollbar. */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(239, 159, 39, 0.45);
+    border-radius: 999px;
+  }
+}
+
+/* ============================================================
+   GLASSMORPHISM SYSTEM
+   PERFORMANCE: only `.glass` / `.glass-dark` use backdrop-filter.
+   Keep <= 2 of those rendered per viewport. Repeated / gridded panels
+   use the `-flat` variants (no blur) — over the smooth gradient backdrop
+   they read identically while staying off the GPU blur budget.
+   Never animate the blur radius. All variants are promoted with translateZ(0).
+   ============================================================ */
+@layer components {
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 20px;
+    box-shadow:
+      0 8px 32px rgba(4, 52, 44, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transform: translateZ(0);
+  }
+
+  /* Dark variant for light photo areas (e.g. golden-hour sky). */
+  .glass-dark {
+    background: rgba(12, 34, 44, 0.38);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    box-shadow:
+      0 8px 32px rgba(4, 52, 44, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+    transform: translateZ(0);
+  }
+
+  /* Blur-free panels for grids / repeated cards (stays within blur budget). */
+  .glass-flat {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 20px;
+    box-shadow:
+      0 8px 32px rgba(4, 52, 44, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transform: translateZ(0);
+  }
+
+  .glass-flat-dark {
+    background: rgba(12, 34, 44, 0.52);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 20px;
+    box-shadow:
+      0 8px 32px rgba(4, 52, 44, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateZ(0);
+  }
+
+  /* Small pill — stack tags / chips. */
+  .glass-chip {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-radius: 9999px;
+    transform: translateZ(0);
+  }
+
+  /* Dark gradient scrim placed over a photo, behind glass panels, so text
+     always clears WCAG AA. black 35% -> transparent. */
+  .scrim {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0.35) 35%,
+      rgba(0, 0, 0, 0.08) 70%,
+      rgba(0, 0, 0, 0) 100%
+    );
+  }
+  .scrim-soft {
+    background: radial-gradient(
+      120% 90% at 50% 60%,
+      rgba(0, 0, 0, 0.45) 0%,
+      rgba(0, 0, 0, 0.18) 45%,
+      rgba(0, 0, 0, 0) 80%
+    );
+  }
+}
+
+/* backdrop-filter fallback -> solid panel */
+@supports not (
+  (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))
+) {
+  .glass,
+  .glass-dark {
+    background: rgba(14, 34, 44, 0.85);
+  }
+}
+
+/* ============================================================
+   AMBIENT FIELD — fixed, behind all content (z -1), GPU-cheap.
+   Soft drifting "valley light" glows + film grain over the body
+   gradient. NO backdrop-filter (stays off the blur budget); only
+   transform/opacity animate. Sits in front of the body gradient,
+   behind every section, and is covered locally by the full-bleed
+   hero/contact photos. Killed to a static wash on reduced motion.
+   ============================================================ */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Three large, inherently-soft radial glows that breathe over the
+   descending gradient. `screen` blend makes them read as light, not paint. */
+.ambient-aurora {
+  position: absolute;
+  inset: -20%;
+  mix-blend-mode: screen;
+}
+.ambient-aurora::before,
+.ambient-aurora::after,
+.ambient-aurora > span {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+  opacity: 0.55;
+}
+/* terracotta bloom — upper left (architecture warmth) */
+.ambient-aurora::before {
+  width: 60vw;
+  height: 60vw;
+  top: -8%;
+  left: -6%;
+  background: radial-gradient(circle at center, rgba(199, 107, 67, 0.34), transparent 62%);
+  animation: aurora-a 26s ease-in-out infinite alternate;
+}
+/* amber bloom — mid right */
+.ambient-aurora::after {
+  width: 52vw;
+  height: 52vw;
+  top: 26%;
+  right: -10%;
+  background: radial-gradient(circle at center, rgba(239, 159, 39, 0.32), transparent 64%);
+  animation: aurora-b 32s ease-in-out infinite alternate;
+}
+/* travel-teal bloom — lower band */
+.ambient-aurora > span {
+  width: 70vw;
+  height: 70vw;
+  bottom: -18%;
+  left: 18%;
+  background: radial-gradient(circle at center, rgba(79, 163, 199, 0.34), transparent 66%);
+  animation: aurora-c 38s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-a {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(8vw, 6vh, 0) scale(1.18); }
+}
+@keyframes aurora-b {
+  0% { transform: translate3d(0, 0, 0) scale(1.05); }
+  100% { transform: translate3d(-7vw, 8vh, 0) scale(0.9); }
+}
+@keyframes aurora-c {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-6vw, -7vh, 0) scale(1.2); }
+}
+
+/* Film grain — static, tiny, premium texture. */
+.ambient-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Gentle top + bottom vignette to seat the content. */
+.ambient-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(0, 0, 0, 0.32), transparent 55%),
+    radial-gradient(120% 80% at 50% 110%, rgba(0, 0, 0, 0.28), transparent 55%);
+}
+
+/* ============================================================
+   GLOW + GRADIENT TEXT + SHIMMER UTILITIES
+   ============================================================ */
+@layer components {
+  /* Clipped gradient headline text. */
+  .text-gradient {
+    background-image: linear-gradient(100deg, #ffffff 0%, #e1f5ee 42%, #b5d4f4 70%, #ffffff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 220% auto;
+  }
+  .text-gradient-amber {
+    background-image: linear-gradient(100deg, #faeeda 0%, #ef9f27 45%, #f6c560 75%, #faeeda 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 220% auto;
+  }
+  /* Slow light-sweep across clipped gradient text. */
+  .text-shimmer {
+    animation: text-sheen 7s ease-in-out infinite;
+  }
+
+  /* Ambient colored glow halos for accent elements. */
+  .glow-amber {
+    box-shadow: 0 0 0 1px rgba(239, 159, 39, 0.25), 0 0 28px rgba(239, 159, 39, 0.35);
+  }
+  .glow-leaf {
+    box-shadow: 0 0 0 1px rgba(29, 158, 117, 0.3), 0 0 26px rgba(29, 158, 117, 0.4);
+  }
+
+  /* Live status dot with a soft expanding halo. */
+  .pulse-dot {
+    position: relative;
+  }
+  .pulse-dot::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    background: currentColor;
+    opacity: 0.55;
+    animation: pulse-ring 2.6s ease-out infinite;
+  }
+
+  /* Cursor-follow spotlight wash. Parent sets --spot-x / --spot-y / --spot
+     (opacity). Pure paint, no blur. */
+  .spotlight-layer {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: var(--spot, 0);
+    background: radial-gradient(
+      18rem 18rem at var(--spot-x, 50%) var(--spot-y, 0%),
+      rgba(255, 255, 255, 0.14),
+      transparent 60%
+    );
+    transition: opacity 0.35s ease;
+  }
+
+  /* Faint engineering grid for technical surfaces. */
+  .grid-faint {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  /* Top hairline that catches light. */
+  .hairline-top {
+    position: relative;
+  }
+  .hairline-top::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(225, 245, 238, 0.5),
+      rgba(239, 159, 39, 0.4),
+      transparent
+    );
+  }
+}
+
+@keyframes text-sheen {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.7); opacity: 0.6; }
+  80%, 100% { transform: scale(2.4); opacity: 0; }
+}
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ============================================================
+   TOPOGRAPHIC CONTOUR TEXTURE — faint "valley map" lines woven into
+   the ambient field. Drifts very slowly. Decorative; frozen on
+   reduced motion by the universal rule.
+   ============================================================ */
+.ambient-contours {
+  position: absolute;
+  inset: -6%;
+  opacity: 0.055;
+  color: #e1f5ee;
+  animation: contour-drift 44s ease-in-out infinite alternate;
+}
+.ambient-contours svg {
+  width: 100%;
+  height: 100%;
+}
+@keyframes contour-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-2.5%, 1.8%, 0) scale(1.04); }
+}
+
+/* ============================================================
+   CURSOR-FOLLOWING LIGHT — a soft glow trailing the pointer
+   (mounted by CursorGlow, fine pointers only). Pure paint.
+   ============================================================ */
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 620px;
+  height: 620px;
+  margin: -310px 0 0 -310px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    circle,
+    rgba(225, 245, 238, 0.1),
+    rgba(239, 159, 39, 0.05) 38%,
+    transparent 66%
+  );
+  will-change: transform;
+}
+
+/* ============================================================
+   ROTATING CONIC LIGHT — traces a panel's edge slowly.
+   ============================================================ */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.aurora-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0deg,
+    rgba(239, 159, 39, 0.55) 60deg,
+    rgba(29, 158, 117, 0.55) 140deg,
+    transparent 220deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: spin-angle 9s linear infinite;
+  pointer-events: none;
+}
+@keyframes spin-angle {
+  to {
+    --angle: 360deg;
+  }
+}
+
+/* ============================================================
+   HOLOGRAPHIC WALKER — a projected figure that strides down the
+   career path (positioned along the trail by ThePath). Articulated
+   walk-cycle + scanline + flicker. Frozen on reduced motion.
+   ============================================================ */
+.holo-walker {
+  filter: drop-shadow(0 0 5px rgba(122, 240, 208, 0.6));
+  animation: holo-flicker 5s linear infinite;
+}
+@keyframes holo-flicker {
+  0%, 46%, 48%, 88%, 90%, 100% { opacity: 0.95; }
+  47% { opacity: 0.72; }
+  89% { opacity: 0.8; }
+}
+.holo-walker .holo-figure {
+  animation: holo-bob 0.9s ease-in-out infinite;
+}
+@keyframes holo-bob {
+  0%, 50%, 100% { transform: translateY(0); }
+  25%, 75% { transform: translateY(-1.5px); }
+}
+.holo-walker [class*='holo-leg'],
+.holo-walker [class*='holo-arm'],
+.holo-walker [class*='holo-shin'] {
+  transform-box: fill-box;
+}
+.holo-walker .holo-leg-front,
+.holo-walker .holo-leg-back {
+  transform-origin: top center;
+  animation: holo-thigh 0.9s ease-in-out infinite;
+}
+.holo-walker .holo-leg-back {
+  animation-delay: -0.45s;
+}
+.holo-walker .holo-shin-front,
+.holo-walker .holo-shin-back {
+  transform-origin: top center;
+  animation: holo-shin 0.9s ease-in-out infinite;
+}
+.holo-walker .holo-shin-back {
+  animation-delay: -0.45s;
+}
+.holo-walker .holo-arm-front,
+.holo-walker .holo-arm-back {
+  transform-origin: top center;
+  animation: holo-arm 0.9s ease-in-out infinite;
+}
+.holo-walker .holo-arm-front {
+  animation-delay: -0.45s;
+}
+@keyframes holo-thigh {
+  0%, 100% { transform: rotate(24deg); }
+  50% { transform: rotate(-24deg); }
+}
+@keyframes holo-shin {
+  0%, 100% { transform: rotate(3deg); }
+  20% { transform: rotate(42deg); }
+  50% { transform: rotate(8deg); }
+  70% { transform: rotate(36deg); }
+}
+@keyframes holo-arm {
+  0%, 100% { transform: rotate(-20deg); }
+  50% { transform: rotate(20deg); }
+}
+.holo-walker .holo-scan {
+  animation: holo-scan 2.8s linear infinite;
+}
+@keyframes holo-scan {
+  0% { transform: translateY(-2px); opacity: 0; }
+  12% { opacity: 0.7; }
+  88% { opacity: 0.5; }
+  100% { transform: translateY(108px); opacity: 0; }
+}
+.holo-walker .holo-base {
+  animation: holo-base 2.8s ease-in-out infinite;
+}
+@keyframes holo-base {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+
+/* ============================================================
+   FLOATING LEAF PARTICLES (hero) — CSS only, max 8, decorative.
+   ============================================================ */
+@keyframes leafdrift {
+  0% {
+    transform: translate3d(0, -10%, 0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.75;
+  }
+  88% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translate3d(var(--lx, 40px), 105vh, 0) rotate(320deg);
+    opacity: 0;
+  }
+}
+
+.leaf {
+  position: absolute;
+  top: 0;
+  width: var(--size, 14px);
+  height: var(--size, 14px);
+  background: linear-gradient(135deg, #1d9e75, #04342c);
+  border-radius: 0 100% 0 100%;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.18));
+  animation: leafdrift var(--dur, 16s) linear infinite;
+  animation-delay: var(--delay, 0s);
+  will-change: transform, opacity;
+}
+
+/* Tiny red-kite mascot — decorative, gentle motion only. */
+@keyframes kitefloat {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) rotate(2deg);
+  }
+}
+
+@keyframes kitewing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(var(--wing-tilt, 2deg));
+  }
+}
+
+.kite-mascot {
+  filter: drop-shadow(0 18px 24px rgba(4, 52, 44, 0.28));
+  animation: kitefloat 7s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+
+.kite-mascot .kite-wing-left {
+  animation: kitewing 5.5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 90% 55%;
+  --wing-tilt: -2deg;
+}
+
+.kite-mascot .kite-wing-right {
+  animation: kitewing 5.5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 10% 55%;
+  --wing-tilt: 2deg;
+}
+
+/* ============================================================
+   REDUCED MOTION — kill parallax-adjacent CSS animation + particles.
+   (Framer Motion handles its own reduction via useReducedMotion.)
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .leaf {
+    display: none !important;
+  }
+  .kite-mascot,
+  .kite-mascot * {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
