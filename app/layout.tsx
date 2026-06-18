@@ -27,9 +27,8 @@ const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
-const title = 'Saicharan “Charan” Duduka — DevOps & Cloud Engineer';
-const description =
-  'DevOps & Cloud Engineer and solo SaaS founder, endlessly curious about how things are built. 5+ years across Azure, AWS and GCP, two live products shipped end-to-end — and an explorer who loves travel, greenery and good design.';
+const title = 'Charan';
+const description = 'Run entirely on curiosity.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
