@@ -6,6 +6,7 @@ import { contactPhoto } from '@/lib/images';
 import { CONTACT, CV_HREF, WORKING_STYLE } from '@/lib/data';
 import { Reveal } from './motion';
 import GlassButton from './GlassButton';
+import FieldPassQR from './FieldPassQR';
 import { Mail, LinkedIn, GitHub, Download, ArrowUpRight, Copy, Check } from './icons';
 import type { ReactNode } from 'react';
 
@@ -171,6 +172,8 @@ export default function TheOpenView() {
             <span aria-live="polite" className="sr-only">
               {copied ? 'Email address copied to clipboard' : ''}
             </span>
+
+            <FieldPassQR />
 
             <div className="mt-7">
               <GlassButton

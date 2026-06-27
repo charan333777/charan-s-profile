@@ -57,6 +57,16 @@ export function LinkedIn(props: IconProps) {
   );
 }
 
+export function Instagram(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="4" y="4" width="16" height="16" rx="4.5" />
+      <circle cx="12" cy="12" r="3.4" />
+      <path d="M16.8 7.2h.01" />
+    </svg>
+  );
+}
+
 export function GitHub(props: IconProps) {
   return (
     <svg {...base} fill="currentColor" stroke="none" {...props}>
@@ -139,6 +149,45 @@ export function Leaf(props: IconProps) {
     <svg {...base} {...props}>
       <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8a7 7 0 0 1-7 7c-2 0-3-.5-3-.5" />
       <path d="M2 21c0-3 1.85-5.36 5.08-6" />
+    </svg>
+  );
+}
+
+export function UserPlus(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M15 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="8.5" cy="7" r="4" />
+      <path d="M19 8v6M22 11h-6" />
+    </svg>
+  );
+}
+
+export function QrCode(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <path d="M14 14h3v3M21 21v.01M17 21h.01M21 14v3M14 21h.01" />
+    </svg>
+  );
+}
+
+export function Clock(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7.5v5l3.2 1.9" />
+    </svg>
+  );
+}
+
+export function MapPin(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 21s-6-5.1-6-10a6 6 0 1 1 12 0c0 4.9-6 10-6 10z" />
+      <circle cx="12" cy="11" r="2.3" />
     </svg>
   );
 }

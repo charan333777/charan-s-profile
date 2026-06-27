@@ -19,6 +19,10 @@ export const CONTACT = {
     label: 'linkedin.com/in/saicharan-duduka-b02204233',
     href: 'https://www.linkedin.com/in/saicharan-duduka-b02204233',
   },
+  instagram: {
+    label: 'instagram.com/charan37_lf',
+    href: 'https://www.instagram.com/charan37_lf/',
+  },
   github: {
     label: 'github.com/charan333777',
     href: 'https://github.com/charan333777',
