@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   motion,
+  AnimatePresence,
   useScroll,
   useSpring,
   useTransform,
@@ -15,7 +16,12 @@ import { TIMELINE, type Milestone } from '@/lib/data';
 import { Reveal } from './motion';
 import SectionHeading from './SectionHeading';
 import SpotlightCard from './SpotlightCard';
+import MilestoneModal from './MilestoneModal';
 import { footsteps } from './soundEngine';
+import dynamic from 'next/dynamic';
+
+/** Lazy-loaded 3D mountain finale (Three.js — client only, code-split). */
+const Mountain3D = dynamic(() => import('./Mountain3D'), { ssr: false });
 
 /** Accent colour per milestone, drawn from its dominant cloud platform. */
 type Accent = { color: string; glow: string };
@@ -37,11 +43,35 @@ function accentFor(m: Milestone): Accent {
  * "ignites" in its platform colour. Tagged with data-trail-node so the parent
  * can measure its centre and thread the winding path through it.
  */
-function NodeDot({ now, accent }: { now?: boolean; accent: Accent }) {
+/**
+ * Trail node that ignites when reached. Its "energy" escalates down the
+ * timeline (index 0 = quiet slow breath → last/now = confident fast pulse),
+ * so the eye is drawn ever downward toward the finale.
+ */
+function NodeDot({
+  now,
+  accent,
+  index,
+  total,
+}: {
+  now?: boolean;
+  accent: Accent;
+  index: number;
+  total: number;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const reduce = useReducedMotion();
   const inView = useInView(ref, { once: true, margin: '0px 0px -45% 0px' });
   const lit = inView || reduce;
+
+  // Energy 0..1 — rises with position, maxed on the current ("now") role.
+  const e = now ? 1 : total > 1 ? index / (total - 1) : 0;
+  const amp = 0.04 + e * 0.12; // breathing scale amplitude
+  const dur = 4.8 - e * 2.3; // faster = more energetic
+  const gLo = 8 + e * 8;
+  const gHi = gLo + 8 + e * 16;
+  const shadow = (g: number) =>
+    `0 0 0 5px rgba(4,52,44,0.55), 0 0 ${g}px ${accent.glow}`;
 
   return (
     <span
@@ -50,21 +80,38 @@ function NodeDot({ now, accent }: { now?: boolean; accent: Accent }) {
       className="absolute left-5 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 md:left-1/2"
       aria-hidden="true"
     >
-      {now && lit && (
-        <span className="absolute inset-0 -m-1 animate-ping rounded-full bg-amber/60" />
+      {/* escalating halo ring — stronger and quicker further down */}
+      {lit && !reduce && (
+        <motion.span
+          className="absolute inset-0 -m-1 rounded-full"
+          style={{ backgroundColor: accent.color }}
+          initial={{ scale: 1, opacity: 0 }}
+          animate={{ scale: [1, 2 + e * 0.7], opacity: [0.1 + e * 0.4, 0] }}
+          transition={{ duration: 3 - e, repeat: Infinity, ease: 'easeOut' }}
+        />
       )}
       <motion.span
         initial={false}
-        animate={lit ? { scale: 1, opacity: 1 } : { scale: 0.55, opacity: 0.5 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 17 }}
+        animate={
+          lit
+            ? reduce
+              ? { scale: 1, opacity: 1, boxShadow: shadow(gHi) }
+              : {
+                  scale: [1, 1 + amp, 1],
+                  opacity: 1,
+                  boxShadow: [shadow(gLo), shadow(gHi), shadow(gLo)],
+                }
+            : { scale: 0.55, opacity: 0.5 }
+        }
+        transition={
+          lit && !reduce
+            ? { duration: dur, repeat: Infinity, ease: 'easeInOut' }
+            : { type: 'spring', stiffness: 320, damping: 17 }
+        }
         className="relative block h-4 w-4 rounded-full border-2"
         style={
           lit
-            ? {
-                backgroundColor: accent.color,
-                borderColor: accent.color,
-                boxShadow: `0 0 0 5px rgba(4,52,44,0.55), 0 0 18px ${accent.glow}`,
-              }
+            ? { backgroundColor: accent.color, borderColor: accent.color }
             : {
                 backgroundColor: '#04342C',
                 borderColor: 'rgba(255,255,255,0.5)',
@@ -80,10 +127,12 @@ function MilestoneCard({
   m,
   index,
   accent,
+  onOpen,
 }: {
   m: Milestone;
   index: number;
   accent: Accent;
+  onOpen: () => void;
 }) {
   const reduce = useReducedMotion();
   const position =
@@ -99,11 +148,12 @@ function MilestoneCard({
       whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: '0px 0px -12% 0px' }}
       transition={{ type: 'spring', stiffness: 130, damping: 18, mass: 0.7 }}
+      onClick={onOpen}
     >
       <SpotlightCard
         as="article"
         className={[
-          'group glass-flat-dark hairline-top p-6 pl-7 sm:p-7 sm:pl-8 transition-colors duration-300 hover:border-white/30',
+          'group glass-flat-dark hairline-top cursor-pointer p-6 pl-7 sm:p-7 sm:pl-8 transition-colors duration-300 hover:border-white/30',
           m.now ? 'ring-1 ring-amber/50' : '',
         ].join(' ')}
       >
@@ -152,6 +202,25 @@ function MilestoneCard({
             </li>
           ))}
         </ul>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen();
+          }}
+          aria-label={`View details for ${m.role} at ${m.org}`}
+          className="group/btn mt-5 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.16em] text-white/70 transition-colors hover:text-white focus-visible:text-white"
+        >
+          View details
+          <span
+            aria-hidden="true"
+            className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover/btn:translate-x-0.5"
+            style={{ color: accent.color }}
+          >
+            →
+          </span>
+        </button>
       </SpotlightCard>
     </motion.div>
   );
@@ -251,9 +320,94 @@ function Footprint({
   );
 }
 
+/**
+ * The trail's destination. The footpath ends in a glowing amber beacon and the
+ * red kite lifts off into a warm horizon — "onto something big". Sits on the
+ * rail axis (left on mobile, centre on desktop) in the space below the last card.
+ */
+function TrailEnd() {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: '0px 0px -15% 0px' });
+  const show = inView || reduce;
+
+  return (
+    <div
+      ref={ref}
+      className="pointer-events-none relative h-[300px] md:h-[340px]"
+      aria-hidden="true"
+    >
+      {/* warm golden-hour sky glow behind the peak */}
+      <span
+        className="absolute left-1/2 top-[150px] -z-10 block h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(239,159,39,0.22), rgba(239,159,39,0.05) 52%, transparent 70%)',
+        }}
+      />
+
+      {/* the rotatable low-poly mountain that crowns the trail */}
+      <div className="absolute left-1/2 top-8 h-[260px] w-[300px] -translate-x-1/2 md:h-[290px] md:w-[360px]">
+        <motion.div
+          className="h-full w-full"
+          initial={false}
+          animate={show ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+        >
+          {show && (
+            <div className="pointer-events-auto h-full w-full">
+              <Mountain3D reduce={!!reduce} />
+            </div>
+          )}
+        </motion.div>
+      </div>
+
+      {/* the kite, soaring above the summit */}
+      <span
+        className="absolute left-1/2 top-2 block -translate-x-1/2"
+        style={{ color: AMBER }}
+      >
+        <motion.span
+          className="block"
+          initial={false}
+          animate={
+            show
+              ? reduce
+                ? { opacity: 0.95, y: 0 }
+                : { opacity: 0.95, y: [0, -14, 0], rotate: [-5, 5, -5] }
+              : { opacity: 0, y: 12 }
+          }
+          transition={
+            reduce
+              ? { duration: 0.7 }
+              : {
+                  opacity: { duration: 0.7 },
+                  y: { duration: 6.5, repeat: Infinity, ease: 'easeInOut' },
+                  rotate: { duration: 6.5, repeat: Infinity, ease: 'easeInOut' },
+                }
+          }
+        >
+          <svg
+            width="58"
+            height="42"
+            viewBox="0 0 210 150"
+            fill="currentColor"
+            style={{ filter: 'drop-shadow(0 0 10px rgba(239,159,39,0.7))' }}
+          >
+            <path d="M102 76C77 44 39 28 14 39c17 12 29 28 38 48 13 4 28 8 50-11Z" />
+            <path d="M118 76c25-32 63-48 88-37-17 12-29 28-38 48-13 4-28 8-50-11Z" />
+            <path d="M96 99 88 142l22-17 22 17-8-43H96Z" />
+          </svg>
+        </motion.span>
+      </span>
+    </div>
+  );
+}
+
 export default function ThePath() {
   const trailRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const { scrollYProgress } = useScroll({
     target: trailRef,
@@ -427,7 +581,7 @@ export default function ThePath() {
               ))}
           </div>
 
-          <ol className="relative space-y-12 pl-12 md:space-y-20 md:pl-0">
+          <ol className="relative space-y-12 pb-24 pl-12 md:space-y-20 md:pb-28 md:pl-0">
             {TIMELINE.map((m, i) => {
               const accent = accentFor(m);
               return (
@@ -435,14 +589,37 @@ export default function ThePath() {
                   key={`${m.org}-${m.period}`}
                   className="relative grid items-center md:grid-cols-2 md:gap-x-16"
                 >
-                  <NodeDot now={m.now} accent={accent} />
-                  <MilestoneCard m={m} index={i} accent={accent} />
+                  <NodeDot
+                    now={m.now}
+                    accent={accent}
+                    index={i}
+                    total={TIMELINE.length}
+                  />
+                  <MilestoneCard
+                    m={m}
+                    index={i}
+                    accent={accent}
+                    onOpen={() => setOpenIndex(i)}
+                  />
                 </li>
               );
             })}
           </ol>
         </div>
+
+        <TrailEnd />
       </div>
+
+      <AnimatePresence>
+        {openIndex !== null && (
+          <MilestoneModal
+            m={TIMELINE[openIndex]}
+            index={openIndex}
+            accent={accentFor(TIMELINE[openIndex])}
+            onClose={() => setOpenIndex(null)}
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 }

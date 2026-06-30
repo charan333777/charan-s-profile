@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101418"/>
+      <stop offset="0.55" stop-color="#161b20"/>
+      <stop offset="1" stop-color="#0d1013"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffb45f"/>
+      <stop offset="0.52" stop-color="#ff6b57"/>
+      <stop offset="1" stop-color="#2dd4bf"/>
+    </linearGradient>
+    <linearGradient id="nodeFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#242c33"/>
+      <stop offset="1" stop-color="#12171c"/>
+    </linearGradient>
+    <filter id="softGlow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 1  0 0.72 0 0 0.42  0 0 0.45 0 0.3  0 0 0 1 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="cyanGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.18  0 0 0 0 0.83  0 0 0 0 0.75  0 0 0 0.75 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M60 0H0V60" fill="none" stroke="#ffffff" stroke-opacity="0.045" stroke-width="1"/>
+    </pattern>
+    <style>
+      .font { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .mono { font-family: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace; }
+      .headline { font-size: 88px; font-weight: 800; letter-spacing: 0; fill: #f7f3ea; }
+      .body { font-size: 34px; font-weight: 520; letter-spacing: 0; fill: #cdd6d3; }
+      .small { font-size: 23px; font-weight: 650; letter-spacing: 3.5px; fill: #8fa3a0; }
+      .nodeTitle { font-size: 28px; font-weight: 740; letter-spacing: 0; fill: #f5efe4; }
+      .nodeText { font-size: 18px; font-weight: 560; letter-spacing: 0; fill: #91a39f; }
+    </style>
+  </defs>
+
+  <rect width="1080" height="1080" fill="url(#bg)"/>
+  <rect width="1080" height="1080" fill="url(#grid)"/>
+  <path d="M88 206C205 82 360 52 496 118C633 184 732 178 841 94C951 11 1044 66 1098 152" fill="none" stroke="#2dd4bf" stroke-opacity="0.12" stroke-width="2"/>
+  <path d="M-20 785C132 702 272 723 401 792C530 861 700 875 857 762C1014 649 1125 718 1190 808" fill="none" stroke="#ffb45f" stroke-opacity="0.14" stroke-width="2"/>
+
+  <g transform="translate(76 78)">
+    <rect x="0" y="0" width="276" height="48" rx="24" fill="#172126" stroke="#2dd4bf" stroke-opacity="0.5"/>
+    <circle cx="31" cy="24" r="7" fill="#2dd4bf" filter="url(#cyanGlow)"/>
+    <text class="font small" x="52" y="32">AI AUTOMATION</text>
+  </g>
+
+  <g transform="translate(74 205)">
+    <text class="font headline" x="0" y="0">Build Systems,</text>
+    <text class="font headline" x="0" y="102">Not Just Prompts</text>
+    <rect x="2" y="145" width="430" height="6" rx="3" fill="url(#accent)"/>
+  </g>
+
+  <text class="font body" x="78" y="512">
+    <tspan x="78" dy="0">The real AI advantage is turning</tspan>
+    <tspan x="78" dy="45">repeatable ideas into workflows.</tspan>
+  </text>
+
+  <g transform="translate(94 628)">
+    <path d="M67 78H287" stroke="#53615e" stroke-width="3" stroke-linecap="round"/>
+    <path d="M407 78H627" stroke="#53615e" stroke-width="3" stroke-linecap="round"/>
+    <path d="M287 78C335 78 347 24 407 24" fill="none" stroke="#ffb45f" stroke-opacity="0.75" stroke-width="3" stroke-linecap="round"/>
+    <path d="M287 78C335 78 347 132 407 132" fill="none" stroke="#2dd4bf" stroke-opacity="0.75" stroke-width="3" stroke-linecap="round"/>
+
+    <g filter="url(#softGlow)">
+      <circle cx="67" cy="78" r="64" fill="url(#nodeFill)" stroke="#ffb45f" stroke-width="3"/>
+      <circle cx="407" cy="24" r="50" fill="url(#nodeFill)" stroke="#2dd4bf" stroke-width="2.5"/>
+      <circle cx="407" cy="132" r="50" fill="url(#nodeFill)" stroke="#ff6b57" stroke-width="2.5"/>
+      <circle cx="747" cy="78" r="64" fill="url(#nodeFill)" stroke="#2dd4bf" stroke-width="3"/>
+    </g>
+
+    <text class="font nodeTitle" x="67" y="72" text-anchor="middle">Idea</text>
+    <text class="font nodeText" x="67" y="100" text-anchor="middle">capture</text>
+    <text class="font nodeTitle" x="407" y="18" text-anchor="middle">Agent</text>
+    <text class="font nodeText" x="407" y="44" text-anchor="middle">decides</text>
+    <text class="font nodeTitle" x="407" y="126" text-anchor="middle">Tool</text>
+    <text class="font nodeText" x="407" y="152" text-anchor="middle">executes</text>
+    <text class="font nodeTitle" x="747" y="72" text-anchor="middle">Output</text>
+    <text class="font nodeText" x="747" y="100" text-anchor="middle">publish</text>
+
+    <g class="mono" font-size="21" font-weight="700" fill="#f7f3ea" opacity="0.86">
+      <text x="198" y="64">IF</text>
+      <text x="286" y="24">THEN</text>
+      <text x="514" y="64">SHIP</text>
+    </g>
+  </g>
+
+  <g transform="translate(78 943)">
+    <rect x="0" y="0" width="924" height="1.5" fill="#ffffff" opacity="0.14"/>
+    <text class="font small" x="0" y="55">AI AUTOMATION • CREATOR SYSTEMS • FUTURE OF WORK</text>
+  </g>
+</svg>

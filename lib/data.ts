@@ -120,6 +120,8 @@ export type Milestone = {
   role: string;
   period: string;
   blurb: string;
+  /** 3–5 concrete things done in the role — shown in the "View details" modal. */
+  highlights: string[];
   tags: string[];
   side: 'left' | 'right';
   metric?: string;
@@ -133,6 +135,13 @@ export const TIMELINE: Milestone[] = [
     period: 'Mar 2021 - May 2023',
     blurb:
       'Managed Azure and GCP infrastructure, reusable Terraform modules, CI/CD pipelines, container workflows and monitoring for enterprise environments.',
+    highlights: [
+      'Authored reusable Terraform modules adopted across enterprise teams',
+      'Built and maintained CI/CD pipelines for reliable, repeatable releases',
+      'Managed Azure and GCP infrastructure for production workloads',
+      'Containerised services and ran container workflows',
+      'Set up monitoring and alerting across enterprise environments',
+    ],
     tags: ['Azure', 'GCP', 'Terraform'],
     side: 'left',
   },
@@ -142,6 +151,12 @@ export const TIMELINE: Milestone[] = [
     period: 'Aug 2023 - Jun 2024',
     blurb:
       'Deployed AWS infrastructure with EC2, RDS, VPC, Route 53, IAM, CloudFormation, S3 and CloudWatch while supporting Jenkins pipelines.',
+    highlights: [
+      'Deployed AWS infrastructure: EC2, RDS, VPC, Route 53, IAM and S3',
+      'Wrote CloudFormation templates for repeatable provisioning',
+      'Configured CloudWatch dashboards and alarms for observability',
+      'Supported Jenkins build and deployment pipelines',
+    ],
     tags: ['AWS', 'CloudFormation', 'Jenkins'],
     side: 'right',
   },
@@ -151,6 +166,12 @@ export const TIMELINE: Milestone[] = [
     period: 'Jun 2024 - Feb 2025',
     blurb:
       'Supported a university web application moving toward production with backend work, DevOps process improvements and release coordination.',
+    highlights: [
+      'Contributed backend work to a university web app heading to production',
+      'Improved DevOps processes for smoother, more predictable releases',
+      'Coordinated release planning and delivery across the team',
+      'Helped harden the application for its production launch',
+    ],
     tags: ['Backend', 'DevOps', 'Delivery'],
     side: 'left',
   },
@@ -160,6 +181,12 @@ export const TIMELINE: Milestone[] = [
     period: 'Feb 2025 - Mar 2026',
     blurb:
       'Designed Azure and GCP IaaS/PaaS solutions, built release pipelines, automated tooling with Ansible and managed Docker/Kubernetes workloads.',
+    highlights: [
+      'Designed Azure and GCP IaaS/PaaS solutions for client workloads',
+      'Built release pipelines for consistent, low-risk deployments',
+      'Automated provisioning and configuration with Ansible',
+      'Managed Docker and Kubernetes workloads in production',
+    ],
     tags: ['Azure', 'GCP', 'Kubernetes'],
     side: 'right',
   },
@@ -169,6 +196,13 @@ export const TIMELINE: Milestone[] = [
     period: 'Apr 2026 - present',
     blurb:
       'Sole founder of an AI-powered CV optimisation platform, owning product design, full-stack engineering, AI workflows, Stripe payments and production operations.',
+    highlights: [
+      'Sole founder — own product, engineering and operations end to end',
+      'Built a full-stack Next.js app with OpenAI-powered CV parsing and ATS scoring',
+      'Integrated Stripe payments, entitlements and analytics',
+      'Designed and shipped the product and brand single-handedly',
+      'Run production operations, validation checks and releases solo',
+    ],
     tags: ['Next.js', 'OpenAI', 'Stripe'],
     side: 'left',
     now: true,
